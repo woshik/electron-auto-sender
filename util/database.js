@@ -1,10 +1,12 @@
 const MongoClient = require('mongodb').MongoClient
 
-module.exports = MongoClient.connect('mongodb://localhost:27017/bdapps', { useNewUrlParser: true, useUnifiedTopology: true })
+module.exports = new Promise ((resolve, reject) => {
+    MongoClient.connect('mongodb://localhost:27017/bdapps', { useNewUrlParser: true, useUnifiedTopology: true })
     .then(client => {
-        console.log('databse successfully connected');
-        client.db();
+        resolve(client.db());
     })
     .catch(err => {
-        throw new Error('Database Connection Fail');
+        reject(err);
     });
+})
+

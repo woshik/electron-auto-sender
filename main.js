@@ -1,31 +1,37 @@
 const { app, BrowserWindow } = require('electron')
 const path = require('path')
-const mongo = require('./util/database');
-const MongoClient = require('mongodb').MongoClient;
+const mongo = require('./util/database')
 let win
 
 function createMainWindow() {
-    win = new BrowserWindow({
-        width: 800,
-        height: 600,
-        show: false,
-        webPreferences: {
-            nodeIntegration: true
-        }
+
+    mongo
+    .then(result => {
+        win = new BrowserWindow({
+            width: 800,
+            height: 600,
+            show: false,
+            webPreferences: {
+                nodeIntegration: true
+            }
+        })
+    
+        win.loadFile(path.join(__dirname, 'views', 'login.html'))
+    
+        win.once('ready-to-show', () => {
+            win.show()
+        })
+
+        console.log(result);
+    })
+    .catch(err => {
+        throw err
     })
 
-    win.loadFile(path.join(__dirname, 'views', 'login.html'))
-
-    win.once('ready-to-show', () => {
-        win.show()
-    })
-    console.log(MongoClient);
     win.on('closed', () => {
         win = null
     })
 }
-
-
 
 app.on('ready', createMainWindow)
 
