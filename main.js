@@ -1,35 +1,36 @@
 const { app, BrowserWindow } = require('electron')
 const path = require('path')
-const mongo = require('./util/database')
-let win
 
-function createMainWindow() {
+let mainWindow
 
-    mongo
-    .then(result => {
-        win = new BrowserWindow({
-            width: 800,
-            height: 600,
-            show: false,
-            webPreferences: {
-                nodeIntegration: true
-            }
-        })
-    
-        win.loadFile(path.join(__dirname, 'views', 'login.html'))
-    
-        win.once('ready-to-show', () => {
-            win.show()
-        })
-
-        console.log(result);
-    })
-    .catch(err => {
-        throw err
+function createMainWindow () {
+    mainWindow = new BrowserWindow({
+        width: 1000,
+        height: 750,
+        minWidth:1000,
+        minHeight:750,
+        show: false,
+        webPreferences: {
+            nodeIntegration: true
+        }
     })
 
-    win.on('closed', () => {
-        win = null
+    const ses = mainWindow.webContents.session
+    // ses.cookies.set({name:'auth', value:'woshikuzzaman'}, (argument) => {
+    // })
+
+    ses.cookies.get({}, (err, result) => {
+            console.log(result)
+        })
+    
+    mainWindow.loadFile(path.join(__dirname, 'views', 'login.html'))
+
+    mainWindow.once('ready-to-show', () => {
+        mainWindow.show()
+    })
+
+    mainWindow.on('closed', () => {
+        mainWindow = null
     })
 }
 
@@ -42,7 +43,7 @@ app.on('window-all-closed', () => {
 })
 
 app.on('activate', () => {
-    if (win === null) {
+    if (mainWindow === null) {
         createMainWindow()
     }
 })
