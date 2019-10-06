@@ -7,7 +7,7 @@
     "start": "electron .",
     "build": "electron-builder -w",
     "make-cert": "electron-builder create-self-signed-cert -p autosender",
-    "v-release": "electron-builder build -w -p 'onTagOrDraft'"
+    "v-release": "GH_TOKEN=5cd554b8e783af1b0d5d1ec8a95916c3df5803a3 electron-builder build -w -p 'onTagOrDraft'"
   },
   "build": {
     "appId": "com.autosender.app",
