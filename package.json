@@ -1,21 +1,55 @@
 {
   "name": "auto-email-sender",
   "version": "1.0.0",
-  "description": "",
+  "description": "This application can send email from gmail automatically.",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-builder -w",
+    "make-cert": "electron-builder create-self-signed-cert -p autosender",
+    "v-release": "electron-builder build -w -p 'onTagOrDraft'"
+  },
+  "build": {
+    "appId": "com.autosender.app",
+    "productName": "Email Auto Sender",
+    "directories": {
+      "buildResources": "build"
+    },
+    "target": "NSIS",
+    "icon": "build/icon.ico",
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico"
+    },
+    "win": {
+      "publish": ["github"],
+      "certificateFile": "private/autosender.pfx",
+      "verifyUpdateCodeSignature": false,
+      "publisherName": "autosender",
+      "target": [{
+        "target": "nsis",
+        "arch": [
+          "x64",
+          "ia32"
+        ]
+      }]
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/woshik/electron-auto-sender"
   },
   "author": "Woshikuzzaman Anik",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^6.0.10"
+    "electron": "^6.0.10",
+    "electron-builder": "^21.2.0"
   },
   "dependencies": {
     "@hapi/joi": "^16.1.5",
     "getmac": "^1.4.6",
-    "jquery": "^3.4.1",
     "mongodb": "^3.3.2",
     "nodemailer": "^6.3.0",
     "xlsx": "^0.15.1"
