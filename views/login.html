@@ -1,43 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-	<title>Login Account</title>
-	<meta charset="UTF-8">
-	<meta http-equiv="Content-Security-Policy" content="script-src 'self';" />
-	<link rel="stylesheet" type="text/css" href="../static/login/css/font-awesome-4.7.0/css/font-awesome.min.css">
-	<link rel="stylesheet" type="text/css" href="../static/login/css/util.css">
-	<link rel="stylesheet" type="text/css" href="../static/login/css/main.css">
+    <title>Login Account</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self';" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/login/css/main.css">
 </head>
+
 <body>
-	<div class="limiter">
-		<div class="container-login100">
-			<div class="wrap-login100">
-				<form class="login100-form validate-form">
-
-					<span class="login100-form-title">
-						Welcome
-					</span>
-
-					<div class="wrap-input100 validate-input m-t-50 m-b-35" data-validate = "Enter Email">
-						<input class="input100" type="text" name="email">
-						<span class="focus-input100" data-placeholder="Email"></span>
-					</div>
-
-					<div class="wrap-input100 validate-input m-b-50" data-validate="Enter password">
-						<input class="input100" type="password" name="password">
-						<span class="focus-input100" data-placeholder="Password"></span>
-					</div>
-
-					<div class="container-login100-form-btn">
-						<button class="login100-form-btn">
-							Login
-						</button>
-					</div>
-
-				</form>
-			</div>
-		</div>
-	</div>
-	<script src="../static/login/js/main.js"></script>
+    <div class="limiter">
+        <div class="container-login100">
+            <div class="wrap-login100">
+                <form class="login100-form" id="loginForm">
+                    <span class="login100-form-title">
+                        Welcome
+                    </span>
+                    <div id="message"></div>
+                    <div class="wrap-input100 m-t-50 m-b-35">
+                        <input class="input100" type="text" name="email" id="email" autocomplete="off">
+                        <span class="focus-input100" data-placeholder="Email"></span>
+                    </div>
+                    <div class="wrap-input100 m-b-50">
+                        <input class="input100" type="password" name="password" id="password" autocomplete="off">
+                        <span class="focus-input100" data-placeholder="Password"></span>
+                    </div>
+                    <div class="container-login100-form-btn">
+                        <button class="login100-form-btn">
+                            Login
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="../renderer/login.js"></script>
 </body>
+
 </html>

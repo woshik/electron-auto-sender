@@ -13,7 +13,11 @@
     "electron": "^6.0.10"
   },
   "dependencies": {
+    "@hapi/joi": "^16.1.5",
+    "getmac": "^1.4.6",
     "jquery": "^3.4.1",
-    "mongodb": "^3.3.2"
+    "mongodb": "^3.3.2",
+    "nodemailer": "^6.3.0",
+    "xlsx": "^0.15.1"
   }
 }
