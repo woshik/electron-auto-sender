@@ -26,7 +26,7 @@ try {
 
 let sendEmailInterval,
     smtpTransport,
-    emaiiRow = 0,
+    emailRow = 0,
     leadRow = 0,
     lead = [],
     email = [],
@@ -50,7 +50,7 @@ const sendMail = async () => {
 
             if (i === 0) {
 
-                email = emails[emaiiRow]
+                email = emails[emailRow]
 
                 if (typeof email === "undefined") {
                     loop = false
@@ -68,6 +68,8 @@ const sendMail = async () => {
                 } catch (err) {
                     logger.error(err.message)
                 }
+
+                emailRow++
             }
 
             let textarea = document.getElementById('sendingInfo')
