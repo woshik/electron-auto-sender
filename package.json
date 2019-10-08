@@ -24,17 +24,21 @@
       "uninstallerIcon": "build/icon.ico"
     },
     "win": {
-      "publish": ["github"],
+      "publish": [
+        "github"
+      ],
       "certificateFile": "private/autosender.pfx",
       "verifyUpdateCodeSignature": false,
       "publisherName": "autosender",
-      "target": [{
-        "target": "nsis",
-        "arch": [
-          "x64",
-          "ia32"
-        ]
-      }]
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ]
     }
   },
   "repository": {
@@ -52,6 +56,8 @@
     "getmac": "^1.4.6",
     "mongodb": "^3.3.2",
     "nodemailer": "^6.3.0",
+    "winston": "^3.2.1",
+    "winston-daily-rotate-file": "^4.2.1",
     "xlsx": "^0.15.1"
   }
 }
