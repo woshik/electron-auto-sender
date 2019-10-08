@@ -24,19 +24,21 @@
       "uninstallerIcon": "build/icon.ico"
     },
     "win": {
-      "publish": [{
-        "provider": "github",
-      }],
+      "publish": [
+        "github"
+      ],
       "certificateFile": "private/autosender.pfx",
       "verifyUpdateCodeSignature": false,
       "publisherName": "autosender",
-      "target": [{
-        "target": "nsis",
-        "arch": [
-          "x64",
-          "ia32"
-        ]
-      }]
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ]
     }
   },
   "repository": {

@@ -21,14 +21,13 @@ function createMainWindow() {
 
     mainWindow.loadFile(path.join(__dirname, 'views', 'login.html'))
 
-    // mainWindow.setMenuBarVisibility(false)
+    mainWindow.setMenuBarVisibility(false)
 
     mainWindow.once('ready-to-show', () => {
         mainWindow.show()
     })
 
     mainWindow.on('closed', () => {
-        console.log('close')
         mainWindow = null
     })
 }

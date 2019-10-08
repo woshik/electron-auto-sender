@@ -38,7 +38,7 @@ module.exports = (focusedWindow) => {
         provider: 'github', 
         owner: 'woshik', 
         repo: 'electron-auto-sender',
-        private: true,
-        token: '5cd554b8e783af1b0d5d1ec8a95916c3df5803a3' })
+        token: '5cd554b8e783af1b0d5d1ec8a95916c3df5803a3' 
+    })
     autoUpdater.checkForUpdates()
 }
