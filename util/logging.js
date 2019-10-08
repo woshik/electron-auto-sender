@@ -15,12 +15,12 @@ module.exports = (app) => {
         ),
         transports: [
             new winstonDailyRotateFile({
-                filename: path.join(app.getAppPath(), 'logging', 'errors', 'error-%DATE%.log'),
+                filename: path.join(app.getPath('appData'), 'Roaming', 'auto email sender', 'logging', 'errors', 'error-%DATE%.log'),
                 datePattern: 'DD-MM-YYYY',
                 level: 'error'
             }),
             new transports.File({
-                filename: path.join(app.getAppPath(), 'logging', 'all.log'),
+                filename: path.join(app.getPath('appData'), 'Roaming', 'auto email sender', 'logging', 'all.log'),
                 level: 'info'
             })
         ]
