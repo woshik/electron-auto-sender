@@ -26,10 +26,6 @@
     "win": {
       "publish": [{
         "provider": "github",
-        "repo": "electron-auto-sender",
-        "host": "https://github.com/woshik/electron-auto-sender",
-        "protocol": "https",
-        "token": "5cd554b8e783af1b0d5d1ec8a95916c3df5803a3"
       }],
       "certificateFile": "private/autosender.pfx",
       "verifyUpdateCodeSignature": false,
