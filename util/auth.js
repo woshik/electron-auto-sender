@@ -58,7 +58,7 @@ module.exports = (args) => {
                                     return resolve(true)
                                 } else {
                                     mac.getMac(async (err, macAddress) => {
-                                        return reject(err)
+                                        reject(err)
 
                                         collecation.updateOne({
                                             email: args.email,
@@ -74,7 +74,7 @@ module.exports = (args) => {
                                                 }
                                             }
                                         }).catch(err => {
-                                            return reject(err)
+                                            reject(err)
                                         })
 
                                         dialog.showMessageBoxSync({
