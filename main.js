@@ -12,7 +12,7 @@ function createMainWindow() {
         minWidth: 1000,
         minHeight: 750,
         show: false,
-        icon: path.join(__dirname, 'build', 'icon.ico'),
+        icon: path.join(__dirname, 'static', 'icon', 'icon.ico'),
         webPreferences: {
             nodeIntegration: true
         }
