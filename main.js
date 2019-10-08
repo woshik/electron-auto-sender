@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
 const auth = require(path.join(__dirname, 'util', 'auth'))
-const logger = require(path.join(__dirname, 'util', 'logging'))
+const logger = require(path.join(__dirname, 'util', 'logging'))(app)
 
 let mainWindow
 
@@ -37,13 +37,13 @@ ipcMain.on('user-login-main-process', (event, args) => {
             result && mainWindow.loadFile(path.join(__dirname, 'views', 'sendInfo.html'))
         })
         .catch(err => {
-            logger(err)
+            logger.error(err.message)
         })
 })
 
 ipcMain.on('email-sending-main-process', (event, args) => {
-    mainWindow.loadFile(path.join(__dirname, 'views', 'sendMail.html'))
     global.mailProcess = args
+    mainWindow.loadFile(path.join(__dirname, 'views', 'sendMail.html'))
 })
 
 app.on('ready', createMainWindow)

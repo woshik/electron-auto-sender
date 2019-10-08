@@ -7,7 +7,6 @@ document.getElementById('sendBtn').addEventListener('click', e => {
     e.preventDefault()
 
     processInfo.sendFromPerMail = document.getElementById('sendFromPerMail').value
-    processInfo.mailSendInterval = document.getElementById('mailSendInterval').value
     processInfo.mailSubject = document.getElementById('mailSubject').value
     processInfo.mailBody = document.getElementById('mailBody').value
 
@@ -42,8 +41,7 @@ document.getElementById('senderFile').addEventListener('click', e => {
 
 const inputValidation = () => {
     const schema = Joi.object({
-        sendFromPerMail: Joi.number().required().label('Send from per mail'),
-        mailSendInterval:Joi.number().required().label('Mail Send Interval'),
+        sendFromPerMail: Joi.number().min(1).max(500).required().label('Send from per mail'),
         mailSubject: Joi.string().trim().required().label('Mail Subject'),
         mailBody: Joi.string().trim().required().label('Mail Body'),
         mailFile: Joi.string().trim().required().label('Mail Address'),
@@ -52,7 +50,6 @@ const inputValidation = () => {
 
     const validateResult = schema.validate({
         sendFromPerMail: processInfo.sendFromPerMail,
-        mailSendInterval: processInfo.mailSendInterval,
         mailSubject: processInfo.mailSubject,
         mailBody: processInfo.mailBody,
         mailFile: processInfo.mailFile,

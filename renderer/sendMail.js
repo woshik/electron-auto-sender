@@ -1,61 +1,105 @@
-const { getGlobal } = require('electron').remote
+const { getGlobal, app } = require('electron').remote
 const xlsx = require('xlsx')
 const nodemailer = require('nodemailer')
+const path = require('path')
+const logger = require(path.join(__dirname, '../', 'util', 'logging'))(app)
 
 let {
     mailBody,
     mailFile,
-    mailSendInterval,
     mailSubject,
     sendFromPerMail,
     senderFile
 } = getGlobal('mailProcess')
 
-mailSendInterval *= 1000
+try {
+    const emailBook = xlsx.readFile(mailFile);
+    const emailSheet = emailBook.SheetNames;
+    var emails = xlsx.utils.sheet_to_json(emailBook.Sheets[emailSheet[0]]);
 
-const senderBook = xlsx.readFile(mailFile, {sheetRows: 5});
-const senderSheet = senderBook.SheetNames;
-let senderRow = xlsx.utils.sheet_to_json(senderBook.Sheets[senderSheet[0]]);
+    const leadBook = xlsx.readFile(senderFile);
+    const leadSheet = leadBook.SheetNames;
+    var leads = xlsx.utils.sheet_to_json(leadBook.Sheets[leadSheet[0]]);
+} catch (err) {
+    logger.error(err.message)
+}
 
-const leadBook = xlsx.readFile(senderFile);
-const leadSheet = leadBook.SheetNames;
-let leadRow = xlsx.utils.sheet_to_json(leadBook.Sheets[leadSheet[0]]);
+let sendEmailInterval,
+    smtpTransport,
+    emaiiRow = 0,
+    leadRow = 0,
+    lead = [],
+    email = [],
+    notSendToLead = [],
+    i = 0,
+    loop
 
-let i = 0
-let senderInfo = senderRow.pop()
-let leadMail
 
-let sendEmailInterval = setInterval(() => {
+const sendMail = async () => {
+    while (loop) {
+        await new Promise(resolve => {
 
-    (i === sendFromPerMail) && (senderInfo = senderRow.pop()) && (i = 0)
+            lead = leads[leadRow]
 
-    leadMail = leadRow.pop()
+            i === sendFromPerMail && (i = 0)
 
-    if (typeof leadMail === "undefined" || typeof senderInfo === "undefined") {
-        clearInterval(sendEmailInterval)
+            if (typeof lead === "undefined") {
+                loop = false
+                return resolve()
+            }
+
+            if (i === 0) {
+
+                email = emails[emaiiRow]
+
+                if (typeof email === "undefined") {
+                    loop = false
+                    return resolve()
+                }
+
+                try {
+                    smtpTransport = nodemailer.createTransport({
+                        service: 'gmail',
+                        auth: {
+                            user: email.email,
+                            pass: email.password
+                        }
+                    })
+                } catch (err) {
+                    logger.error(err.message)
+                }
+            }
+
+            let textarea = document.getElementById('sendingInfo')
+
+            smtpTransport.sendMail({
+                    from: email.email,
+                    to: lead.lead,
+                    subject: mailSubject,
+                    text: mailBody
+                })
+                .then(result => {
+                    textarea.value += `\n${leadRow}. From ${email.email} To ${lead.lead}`
+                    resolve()
+                })
+                .catch(err => {
+                    notSendToLead.push(lead.lead)
+                    textarea.value += `\n${leadRow}. ${err.message}`
+                    resolve()
+                })
+
+            leadRow++
+            i++
+        })
     }
+}
 
-    let smtpTransport = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: senderInfo.email,
-            pass: senderInfo.password
-        }
-    })
+document.getElementById('startBtn').addEventListener('click', () => {
+    loop = true
+    sendMail()
+})
 
-    let textarea = document.getElementById('sendingInfo')
 
-    smtpTransport.sendMail({
-            from: senderInfo.email,
-            to: leadMail.lead,
-            subject: mailSubject,
-            text: mailBody
-        })
-        .then(result => {
-            textarea.value += `\nFrom ${senderInfo.email} To ${leadMail.lead}`
-        })
-        .catch(err => {
-            textarea.value += `\n${err.message}`
-        })
-    i++
-}, mailSendInterval);
+document.getElementById('stopBtn').addEventListener('click', () => {
+    loop = false
+})
