@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
 const auth = require(path.join(__dirname, 'util', 'auth'))
 const logger = require(path.join(__dirname, 'util', 'logging'))(app)
+const update = require(path.join(__dirname, 'util', 'updater'))
 
 let mainWindow
 
@@ -27,6 +28,7 @@ function createMainWindow() {
     })
 
     mainWindow.on('closed', () => {
+        console.log('close')
         mainWindow = null
     })
 }
@@ -46,7 +48,10 @@ ipcMain.on('email-sending-main-process', (event, args) => {
     mainWindow.loadFile(path.join(__dirname, 'views', 'sendMail.html'))
 })
 
-app.on('ready', createMainWindow)
+app.on('ready', () => {
+    createMainWindow()
+    update(mainWindow)
+})
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
