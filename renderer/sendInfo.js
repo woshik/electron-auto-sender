@@ -15,7 +15,6 @@ document.getElementById('sendBtn').addEventListener('click', e => {
     processInfo.sendFromPerMail = document.getElementById('sendFromPerMail').value
     processInfo.mailSubject = document.getElementById('mailSubject').value
     processInfo.mailBody = editor.html.get(true)
-
     inputValidation() && ipcRenderer.send('email-sending-main-process', processInfo)
 })
 

@@ -23,7 +23,7 @@ try {
 } catch (err) {
     logger.error(err.message)
 }
-
+console.log(mailBody)
 let sendEmailInterval,
     smtpTransport,
     emailRow = 0,
@@ -35,16 +35,18 @@ let sendEmailInterval,
     loop,
     skipEmail = 0
 
-
 const sendMail = async () => {
     while (loop) {
         await new Promise(resolve => {
 
             lead = leads[leadRow]
 
-            (i === sendFromPerMail || skipEmail === 5) && (i = 0) && (skipEmail = 0)
+            if(i === sendFromPerMail || skipEmail === 5){
+                i = 0
+                skipEmail = 0
+            }
 
-            if (typeof lead === "undefined") {
+            if (lead === undefined) {
                 loop = false
                 dialog.showMessageBox({
                     type: "info",
@@ -58,7 +60,7 @@ const sendMail = async () => {
 
                 email = emails[emailRow]
 
-                if (typeof email === "undefined") {
+                if (email === undefined) {
                     loop = false
                     dialog.showMessageBox({
                         type: "info",
