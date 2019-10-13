@@ -1,14 +1,20 @@
-const {remote, ipcRenderer} = require('electron')
+const { remote, ipcRenderer } = require('electron')
 const { app, dialog } = remote
 const Joi = require('@hapi/joi');
+
+const FroalaEditor = require('froala-editor');
+require('froala-editor/js/plugins.pkgd.min');
+
 let processInfo = {}
+
+var editor = new FroalaEditor('#edit');
 
 document.getElementById('sendBtn').addEventListener('click', e => {
     e.preventDefault()
 
     processInfo.sendFromPerMail = document.getElementById('sendFromPerMail').value
     processInfo.mailSubject = document.getElementById('mailSubject').value
-    processInfo.mailBody = document.getElementById('mailBody').value
+    processInfo.mailBody = editor.html.get(true)
 
     inputValidation() && ipcRenderer.send('email-sending-main-process', processInfo)
 })

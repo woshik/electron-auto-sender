@@ -1,4 +1,4 @@
-const { getGlobal, app } = require('electron').remote
+const { getGlobal, app, dialog } = require('electron').remote
 const xlsx = require('xlsx')
 const nodemailer = require('nodemailer')
 const path = require('path')
@@ -32,7 +32,8 @@ let sendEmailInterval,
     email = [],
     notSendToLead = [],
     i = 0,
-    loop
+    loop,
+    skipEmail = 0
 
 
 const sendMail = async () => {
@@ -41,10 +42,15 @@ const sendMail = async () => {
 
             lead = leads[leadRow]
 
-            i === sendFromPerMail && (i = 0)
+            (i === sendFromPerMail || skipEmail === 5) && (i = 0) && (skipEmail = 0)
 
             if (typeof lead === "undefined") {
                 loop = false
+                dialog.showMessageBox({
+                    type: "info",
+                    title: "Lead Complete",
+                    message: "Send Email To All Lead Address"
+                })
                 return resolve()
             }
 
@@ -54,6 +60,11 @@ const sendMail = async () => {
 
                 if (typeof email === "undefined") {
                     loop = false
+                    dialog.showMessageBox({
+                        type: "info",
+                        title: "Email Complete",
+                        message: "All Sender Mail Address completed"
+                    })
                     return resolve()
                 }
 
@@ -78,13 +89,15 @@ const sendMail = async () => {
                     from: email.email,
                     to: lead.lead,
                     subject: mailSubject,
-                    text: mailBody
+                    html: mailBody
                 })
                 .then(result => {
                     textarea.value += `\n${leadRow}. From ${email.email} To ${lead.lead}`
+                    skipEmail = 0
                     resolve()
                 })
                 .catch(err => {
+                    skipEmail++
                     notSendToLead.push(lead.lead)
                     textarea.value += `\n${leadRow}. ${err.message}`
                     resolve()
