@@ -1,64 +1,96 @@
 const { remote, ipcRenderer } = require('electron')
 const { app, dialog } = remote
-const Joi = require('@hapi/joi');
-
-const FroalaEditor = require('froala-editor');
-require('froala-editor/js/plugins.pkgd.min');
+const { basename, dirname, join, normalize } = require('path')
+const Joi = require('@hapi/joi')
+const xlsx = require('xlsx')
+const logger = require(join(__dirname, '../', 'util', 'logging'))(app)
 
 let processInfo = {}
 
-var editor = new FroalaEditor('#edit');
+let openPath;
 
 document.getElementById('sendBtn').addEventListener('click', e => {
     e.preventDefault()
-
-    processInfo.sendFromPerMail = document.getElementById('sendFromPerMail').value
-    processInfo.mailSubject = document.getElementById('mailSubject').value
-    processInfo.mailBody = editor.html.get(true)
     inputValidation() && ipcRenderer.send('email-sending-main-process', processInfo)
 })
 
-document.getElementById('mailFile').addEventListener('click', e => {
+document.getElementById('emailSubject').addEventListener('click', e => {
     dialog.showOpenDialog({
-        title: 'Select Mail File',
-        defaultPath: app.getPath('home'),
+        title: 'Select Email Subject File',
+        defaultPath: typeof openPath==='undefined' ? app.getPath('home') : normalize(openPath),
         filters: [
-            { name: 'Excel File', extensions: ['xls', 'xlsx'] },
+            { name: 'Excel File', extensions: ['xlsm', 'xlsx', 'xls', 'xlt'] },
         ],
         properties: ['openFile']
     }, filename => {
-        processInfo.mailFile = filename[0]
+        if (filename.length === 0) return
+        openPath = dirname(filename[0])
+        document.getElementById("emailSubjectFileName").innerHTML = basename(filename[0])
+        processInfo.emailSubject = readXLFile(filename[0])
     })
 })
 
-document.getElementById('senderFile').addEventListener('click', e => {
+document.getElementById('emailBody').addEventListener('click', e => {
     dialog.showOpenDialog({
-        title: 'Select Sender File',
-        defaultPath: app.getPath('home'),
+        title: 'Select Email Body File',
+        defaultPath: typeof openPath==='undefined' ? app.getPath('home') : normalize(openPath),
         filters: [
-            { name: 'Excel File', extensions: ['xls', 'xlsx'] },
+            { name: 'Excel File', extensions: ['xlsm', 'xlsx', 'xls', 'xlt'] },
         ],
         properties: ['openFile']
     }, filename => {
-        processInfo.senderFile = filename[0]
+        if (filename.length === 0) return
+        openPath = dirname(filename[0])  
+        document.getElementById("emailBodyFileName").innerHTML = basename(filename[0])
+        processInfo.emailBody = readXLFile(filename[0])
+    })
+})
+
+document.getElementById('emailAddress').addEventListener('click', e => {
+    dialog.showOpenDialog({
+        title: 'Select Mail File',
+        defaultPath: typeof openPath==='undefined' ? app.getPath('home') : normalize(openPath),
+        filters: [
+            { name: 'Excel File', extensions: ['xlsm', 'xlsx', 'xls', 'xlt'] },
+        ],
+        properties: ['openFile']
+    }, filename => {
+        if (filename.length === 0) return
+        openPath = dirname(filename[0])
+        document.getElementById("emailAddressFileName").innerHTML = basename(filename[0])
+        processInfo.emailAddress = readXLFile(filename[0])
+    })
+})
+
+document.getElementById('leadAddress').addEventListener('click', e => {
+    dialog.showOpenDialog({
+        title: 'Select Sender File',
+        defaultPath: typeof openPath==='undefined' ? app.getPath('home') : normalize(openPath),
+        filters: [
+            { name: 'Excel File', extensions: ['xlsm', 'xlsx', 'xls', 'xlt'] },
+        ],
+        properties: ['openFile']
+    }, filename => {
+        if (filename.length === 0) return
+        openPath = dirname(filename[0])
+        document.getElementById("leadAddressFileName").innerHTML = basename(filename[0])
+        processInfo.leadAddress = readXLFile(filename[0])
     })
 })
 
 const inputValidation = () => {
     const schema = Joi.object({
-        sendFromPerMail: Joi.number().min(1).max(500).required().label('Send from per mail'),
-        mailSubject: Joi.string().trim().required().label('Mail Subject'),
-        mailBody: Joi.string().trim().required().label('Mail Body'),
-        mailFile: Joi.string().trim().required().label('Mail Address'),
-        senderFile: Joi.string().trim().required().label('Sender Mail')
+        emailSubject: Joi.required().label('Email Subject'),
+        emailBody: Joi.required().label('Email Body'),
+        emailAddress: Joi.required().label('Email Address'),
+        leadAddress: Joi.required().label('Lead Mail')
     });
 
     const validateResult = schema.validate({
-        sendFromPerMail: processInfo.sendFromPerMail,
-        mailSubject: processInfo.mailSubject,
-        mailBody: processInfo.mailBody,
-        mailFile: processInfo.mailFile,
-        senderFile: processInfo.senderFile,
+        emailSubject: processInfo.emailSubject,
+        emailBody: processInfo.emailBody,
+        emailAddress: processInfo.emailAddress,
+        leadAddress: processInfo.leadAddress,
     });
 
     if (validateResult.error) {
@@ -98,5 +130,14 @@ const showErrorMessage = message => {
         setTimeout(() => {
             e.path[1].style.display = "none";
         }, 800)
+    }
+}
+
+const readXLFile = (path) => {
+    try {
+        let book = xlsx.readFile(path)
+        return xlsx.utils.sheet_to_json(book.Sheets[book.SheetNames[0]])
+    } catch (err) {
+        logger.error(err)
     }
 }

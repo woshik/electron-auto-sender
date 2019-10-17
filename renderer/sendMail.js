@@ -1,52 +1,21 @@
-const { getGlobal, app, dialog } = require('electron').remote
-const xlsx = require('xlsx')
+const { remote, ipcRenderer } = require('electron')
+const { dialog } = remote
 const nodemailer = require('nodemailer')
-const path = require('path')
-const logger = require(path.join(__dirname, '../', 'util', 'logging'))(app)
 
-let {
-    mailBody,
-    mailFile,
-    mailSubject,
-    sendFromPerMail,
-    senderFile
-} = getGlobal('mailProcess')
+let processInfo, loop, smtpTransport, emailRow = emailSubjectRow = emailBodyRow = leadRow = 0;
 
-try {
-    const emailBook = xlsx.readFile(mailFile);
-    const emailSheet = emailBook.SheetNames;
-    var emails = xlsx.utils.sheet_to_json(emailBook.Sheets[emailSheet[0]]);
-
-    const leadBook = xlsx.readFile(senderFile);
-    const leadSheet = leadBook.SheetNames;
-    var leads = xlsx.utils.sheet_to_json(leadBook.Sheets[leadSheet[0]]);
-} catch (err) {
-    logger.error(err.message)
-}
-console.log(mailBody)
-let sendEmailInterval,
-    smtpTransport,
-    emailRow = 0,
-    leadRow = 0,
-    lead = [],
-    email = [],
-    notSendToLead = [],
-    i = 0,
-    loop,
-    skipEmail = 0
+ipcRenderer.on('email-sending-renderer-process', (event, payload) => {
+    processInfo = payload
+})
 
 const sendMail = async () => {
     while (loop) {
         await new Promise(resolve => {
 
-            lead = leads[leadRow]
-
-            if(i === sendFromPerMail || skipEmail === 5){
-                i = 0
-                skipEmail = 0
-            }
-
-            if (lead === undefined) {
+            if (!processInfo.emailAddress[emailRow]) emailRow = 0
+            if (!processInfo.emailSubject[emailBodyRow]) emailBodyRow = 0
+            if (!processInfo.emailBody[emailSubjectRow]) emailSubjectRow = 0
+            if (!processInfo.leadAddress[leadRow]) {
                 loop = false
                 dialog.showMessageBox({
                     type: "info",
@@ -56,57 +25,34 @@ const sendMail = async () => {
                 return resolve()
             }
 
-            if (i === 0) {
-
-                email = emails[emailRow]
-
-                if (email === undefined) {
-                    loop = false
-                    dialog.showMessageBox({
-                        type: "info",
-                        title: "Email Complete",
-                        message: "All Sender Mail Address completed"
-                    })
-                    return resolve()
-                }
-
-                try {
-                    smtpTransport = nodemailer.createTransport({
-                        service: 'gmail',
-                        auth: {
-                            user: email.email,
-                            pass: email.password
-                        }
-                    })
-                } catch (err) {
-                    logger.error(err.message)
-                }
-
-                emailRow++
+            try {
+                smtpTransport = nodemailer.createTransport({
+                    service: 'gmail',
+                    auth: {
+                        user: processInfo.emailAddress[emailRow].email,
+                        pass: processInfo.emailAddress[emailRow].password
+                    }
+                })
+            } catch (err) {
+                logger.error(err.message)
             }
 
-            let textarea = document.getElementById('sendingInfo')
+            emailRow = emailBodyRow = emailSubjectRow = ++leadRow
 
             smtpTransport.sendMail({
-                    from: email.email,
-                    to: lead.lead,
-                    subject: mailSubject,
-                    html: mailBody
+                    from: processInfo.emailAddress[emailRow].email,
+                    to: processInfo.leadAddress[leadRow].lead,
+                    subject: processInfo.emailBody[emailSubjectRow].sbuject,
+                    text: processInfo.emailBody[emailSubjectRow].body
                 })
                 .then(result => {
-                    textarea.value += `\n${leadRow}. From ${email.email} To ${lead.lead}`
-                    skipEmail = 0
-                    resolve()
+                    document.getElementById('sendingInfo').value += `\n${leadRow}. From ${processInfo.emailAddress[emailRow].email} To ${processInfo.leadAddress[leadRow].lead}`
+                    return resolve()
                 })
                 .catch(err => {
-                    skipEmail++
-                    notSendToLead.push(lead.lead)
-                    textarea.value += `\n${leadRow}. ${err.message}`
-                    resolve()
+                    document.getElementById('sendingInfo').value += `\n${leadRow}. ${err.message}`
+                    return resolve()
                 })
-
-            leadRow++
-            i++
         })
     }
 }

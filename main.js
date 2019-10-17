@@ -20,7 +20,7 @@ function createMainWindow() {
 
     mainWindow.loadFile(path.join(__dirname, 'views', 'login.html'))
 
-    //mainWindow.setMenuBarVisibility(false)
+    mainWindow.setMenuBarVisibility(false)
 
     mainWindow.once('ready-to-show', () => {
         mainWindow.show()
@@ -42,8 +42,36 @@ ipcMain.on('user-login-main-process', (event, args) => {
 })
 
 ipcMain.on('email-sending-main-process', (event, args) => {
-    global.mailProcess = args
-    mainWindow.loadFile(path.join(__dirname, 'views', 'sendMail.html'))
+
+    let emailSendWindow = new BrowserWindow({
+        width: 1000,
+        height: 750,
+        minWidth: 1000,
+        minHeight: 750,
+        show: false,
+        icon: path.join(__dirname, 'static', 'icon', 'icon.ico'),
+        webPreferences: {
+            nodeIntegration: true
+        }
+    })
+
+    emailSendWindow.loadFile(path.join(__dirname, 'views', 'sendMail.html'))
+
+    emailSendWindow.setMenuBarVisibility(false)
+
+    emailSendWindow.once('ready-to-show', () => {
+        mainWindow.close()
+        emailSendWindow.show()
+    })
+
+    emailSendWindow.on('closed', () => {
+        emailSendWindow = null
+    })
+
+    emailSendWindow.webContents.on('did-finish-load', () => {
+        emailSendWindow.webContents.send('email-sending-renderer-process', args)
+    });
+
 })
 
 app.on('ready', createMainWindow)

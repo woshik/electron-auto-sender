@@ -55,7 +55,6 @@
     "@hapi/joi": "^16.1.5",
     "electron-log": "^3.0.8",
     "electron-updater": "^4.1.2",
-    "froala-editor": "^3.0.6",
     "getmac": "^1.4.6",
     "mongodb": "^3.3.2",
     "nodemailer": "^6.3.0",

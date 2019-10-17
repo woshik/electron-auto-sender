@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="../static/dashboard/css/bootstrap.css" />
     <link rel="stylesheet" href="../static/dashboard/css/style.css" />
     <link rel="stylesheet" href="../static/dashboard/css/style4.css">
-    <link rel="stylesheet" href="../node_modules/froala-editor/css/froala_editor.pkgd.min.css">
 </head>
 
 <body>
@@ -18,30 +17,36 @@
             <section class="forms-section">
                 <div class="outer-w3-agile mt-3">
                     <div id="message"></div>
-                    <div class="form-group">
-                        <label for="sendFromPerMail">Send from per mail</label>
-                        <input type="number" min="1" max="500" class="form-control" id="sendFromPerMail" value="100" placeholder="Send from per mail">
-                    </div>
-                    <div class="form-group">
-                        <label for="mailSubject">Mail Subject</label>
-                        <input type="text" class="form-control" id="mailSubject" placeholder="Subject">
-                    </div>
-                    <div id="editor">
-                        <div id='edit' style='margin-top:30px;'>
-                        </div>
-                    </div>
-                    <br>
+
                     <div class="form-row">
                         <div class="form-group col-md-6">
-                            <label for="sendFromPerMail">Mail Address</label>
-                            <button type="submit" class="btn btn-success" id="mailFile">File</button>
+                            <label for="emailSubject">Email Subject</label>
+                            <button type="submit" class="btn btn-info" id="emailSubject">File</button>
+                            <span id="emailSubjectFileName" class="text-info ml-2"></span>
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="mailSendInterval">Sender Mail</label>
-                            <button type="submit" class="btn btn-success" id="senderFile">File</button>
+                            <label for="emailBody">Email Body</label>
+                            <button type="submit" class="btn btn-info" id="emailBody">File</button>
+                            <span id="emailBodyFileName" class="text-info ml-2"></span>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary" id="sendBtn">Send</button>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="emailAddress">Email Address</label>
+                            <button type="submit" class="btn btn-success" id="emailAddress">File</button>
+                            <span id="emailAddressFileName" class="text-success ml-2"></span>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="leadAddress">Lead Address</label>
+                            <button type="submit" class="btn btn-success" id="leadAddress">File</button>
+                            <span id="leadAddressFileName" class="text-success ml-2"></span>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary" id="sendBtn">Send</button>
+                    </div>
                 </div>
             </section>
         </div>
