@@ -13,8 +13,8 @@ const sendMail = async () => {
         await new Promise(resolve => {
 
             if (!processInfo.emailAddress[emailRow]) emailRow = 0
-            if (!processInfo.emailSubject[emailBodyRow]) emailBodyRow = 0
-            if (!processInfo.emailBody[emailSubjectRow]) emailSubjectRow = 0
+            if (!processInfo.emailSubject[emailSubjectRow]) emailSubjectRow = 0
+            if (!processInfo.emailBody[emailBodyRow]) emailBodyRow = 0
             if (!processInfo.leadAddress[leadRow]) {
                 loop = false
                 dialog.showMessageBox({
@@ -37,23 +37,26 @@ const sendMail = async () => {
                 logger.error(err.message)
             }
 
-            emailRow = emailBodyRow = emailSubjectRow = ++leadRow
-
             smtpTransport.sendMail({
                     from: processInfo.emailAddress[emailRow].email,
                     to: processInfo.leadAddress[leadRow].lead,
-                    subject: processInfo.emailBody[emailSubjectRow].sbuject,
-                    text: processInfo.emailBody[emailSubjectRow].body
+                    subject: processInfo.emailSubject[emailSubjectRow].subject,
+                    text: processInfo.emailBody[emailBodyRow].body
                 })
                 .then(result => {
-                    document.getElementById('sendingInfo').value += `\n${leadRow}. From ${processInfo.emailAddress[emailRow].email} To ${processInfo.leadAddress[leadRow].lead}`
+                    document.getElementById('sendingInfo').value += `\n${leadRow+1}. From ${processInfo.emailAddress[emailRow].email} To ${processInfo.leadAddress[leadRow].lead}`
                     return resolve()
                 })
                 .catch(err => {
-                    document.getElementById('sendingInfo').value += `\n${leadRow}. ${err.message}`
+                    document.getElementById('sendingInfo').value += `\n${leadRow+1}. ${err.message}`
                     return resolve()
                 })
         })
+
+        emailRow++
+        emailBodyRow++
+        emailSubjectRow++
+        leadRow++
     }
 }
 
